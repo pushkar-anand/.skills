@@ -85,7 +85,8 @@ shared directory lets one agent edit a skill every other agent then loads.
 
 ## Adding a skill
 
-1. `skills/<category>/<name>/SKILL.md`, with `name:` matching the directory.
+1. `skills/<name>/SKILL.md`, with `name:` matching the directory. One level —
+   see Layout above; a category directory survives in no consumer.
 2. Keep `SKILL.md` under ~500 lines; push detail into `references/`.
 3. Write the `description` for *retrieval* — say what it does and when to use
    it, with the words someone would actually use. It is the only part loaded
