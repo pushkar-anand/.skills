@@ -11,4 +11,7 @@ metadata:
 A deliberately inert skill. Its only purpose is to be added and removed so the
 delivery path from a `git push` to a running agent can be observed end to end.
 
+The first push of this skill predated the consumer's webhook and reached
+nothing, which is the observation it was written to produce.
+
 Do not use it for anything. It will be deleted.
