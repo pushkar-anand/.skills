@@ -10,7 +10,7 @@
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-canonical=skills/security/1pass-read/scripts/lib.sh
+canonical=skills/1pass-read/scripts/lib.sh
 [[ -f $canonical ]] || { echo "missing canonical lib: ${canonical}" >&2; exit 1; }
 
 mapfile -t copies < <(find skills -name lib.sh -type f | grep -v "^${canonical}$" | sort)
