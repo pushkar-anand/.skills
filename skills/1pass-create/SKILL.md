@@ -13,6 +13,12 @@ Used when the agent signs up for a service and needs somewhere to put the
 credentials. Looking accounts up again is `1pass-read`; two-factor setup is
 `1pass-2fa`.
 
+## Files
+
+`scripts/preflight.sh`, `scripts/create.sh` and `scripts/set-field.sh` are the
+commands. `scripts/lib.sh` is sourced by every one of them and is never run
+directly — but it must be present, or they all fail on their first line.
+
 ## Check the token can write, once
 
 ```bash

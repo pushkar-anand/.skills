@@ -16,6 +16,12 @@ factor as readily as the first — so there is no ongoing cost to enabling it.
 The account itself comes from `1pass-create`; reading codes back at later logins
 is `1pass-read`.
 
+## Files
+
+`scripts/set-totp.sh` and `scripts/set-recovery.sh` are the commands.
+`scripts/lib.sh` is sourced by both and is never run directly — but it must be
+present, or they fail on their first line.
+
 ## Do it in one pass
 
 The seed and the recovery codes appear on the same screen, and most sites show

@@ -13,6 +13,13 @@ Read-only access to the accounts stored in this agent's own vault. Every command
 here is safe to run: nothing writes. Creating accounts lives in `1pass-create`,
 2FA setup in `1pass-2fa`.
 
+## Files
+
+`scripts/find.sh`, `scripts/show.sh`, `scripts/totp.sh`, `scripts/run.sh` and
+`scripts/vault.sh` are the commands. `scripts/lib.sh` is sourced by every one of
+them and is never run directly — but it must be present, or they all fail on
+their first line.
+
 ## Which vault
 
 Every agent holds a Connect token scoped to its own vault, so there is normally
