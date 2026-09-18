@@ -21,30 +21,30 @@ One level, deliberately. Every consumer assumes it: a Hermes tap defaults to
 directory; Claude Code scans a plugin's `skills/<name>/SKILL.md`; Codex scans
 `~/.agents/skills/<name>/`. A category directory survives in none of them.
 
-Grouping lives in the name instead — `1pass-read`, `1pass-create`, `1pass-2fa`
-sort together and stay unique once installed alongside skills from other taps.
-That also satisfies the spec rule that `name` must equal the parent directory
-name, which a nested `security/1pass/create` would break by making the skill
-globally named `create`.
+Grouping lives in the name instead — e.g. a `foo-read`/`foo-create` family
+sorts together and stays unique once installed alongside skills from other
+taps. That also satisfies the spec rule that `name` must equal the parent
+directory name, which a nested `security/foo/create` would break by making the
+skill globally named `create`.
 
 ## Skills
 
-| Skill | What it does |
-|---|---|
-| `1pass-read` | Discover and read stored website accounts — list, find by domain, inject a secret into a command, get a live TOTP code. Read-only. |
-| `1pass-create` | Create logins with generated passwords when signing up; rotate passwords; store extra fields. Writes. |
-| `1pass-2fa` | Store TOTP seeds and recovery codes when enabling two-factor. Writes. |
+None right now — the `1pass-read`/`1pass-create`/`1pass-2fa` family that used
+to live here is gone, replaced by Hermes' own built-in credential vault
+(1Password as an optional read-through backend). See
+[homelab-infrastructure's hermes README](https://github.com/pushkar-anand/homelab-infrastructure/blob/main/services/ai/hermes/README.md#credential-vault)
+for that setup.
 
-They default to never printing a credential. A password reaches a program through
-`op read`, `run.sh` (environment) or `show.sh --exec` (stdin), and is only printed
-when the model itself has to type it into a form — which takes an explicit flag
-and emits a warning.
-
-The three split on the read/write boundary so they can be installed
-independently: an agent that should never create accounts gets `1pass-read`
-alone and has no script capable of writing to the vault. Each carries its own
-copy of `scripts/lib.sh` so it installs standalone; `tools/check-lib-sync.sh`
-enforces that the copies stay identical.
+A convention worth keeping for whatever lands here next: if a skill family
+splits along a read/write (or similarly privileged) boundary, name it that way
+(`foo-read`, `foo-create`) so each installs independently — a profile that
+should never write gets `foo-read` alone and has no script capable of it.
+Default to never printing a credential outright; make a program consume it via
+environment or stdin, and require an explicit flag (with a warning) for the one
+case where the model has to type it into a form. If more than one skill in a
+family needs the same helper code, give each its own copy of
+`scripts/lib.sh` rather than a shared path outside `skills/<name>/` — see
+Layout above — and run `tools/check-lib-sync.sh` to keep the copies identical.
 
 ## Using these with Hermes
 
@@ -52,17 +52,17 @@ Add the tap once, then install per agent profile:
 
 ```bash
 hermes skills tap add pushkar-anand/.skills
-hermes skills search 1pass
-hermes skills install 1pass-read
+hermes skills search <name>
+hermes skills install <name>
 ```
 
-Install per skill rather than per tap. The read/write split only means anything
-if a profile that should not create accounts gets `1pass-read` and nothing else.
+Install per skill rather than per tap — that's the only way a read/write split
+(see Skills above) means anything.
 
 A single skill can also be installed without subscribing to the tap:
 
 ```bash
-hermes skills install pushkar-anand/.skills/skills/1pass-read
+hermes skills install pushkar-anand/.skills/skills/<name>
 ```
 
 Skills install under the profile's `HERMES_HOME/skills`, which lives in the
