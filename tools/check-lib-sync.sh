@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
-# The 1pass-* skills each carry their own copy of scripts/lib.sh so that any one
-# of them installs standalone. That duplication is deliberate, but it only stays
-# safe while the copies are identical — a fix applied to one and not the others is
-# the failure mode this guards against.
+# A skill family sharing scripts/lib.sh (see e.g. the split-skill note in
+# README.md) each carries its own copy so that any one installs standalone.
+# That duplication is deliberate, but it only stays safe while the copies are
+# identical — a fix applied to one and not the others is the failure mode this
+# guards against.
 #
 # Usage: tools/check-lib-sync.sh [--fix]
-#   --fix copies the 1pass-read copy over the others.
+#   --fix copies the first (alphabetically) copy over the others.
 
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-canonical=skills/1pass-read/scripts/lib.sh
-[[ -f $canonical ]] || { echo "missing canonical lib: ${canonical}" >&2; exit 1; }
+mapfile -t libs < <(find skills -name lib.sh -type f | sort)
+[[ ${#libs[@]} -gt 0 ]] || { echo "no lib.sh copies found"; exit 0; }
 
-mapfile -t copies < <(find skills -name lib.sh -type f | grep -v "^${canonical}$" | sort)
-[[ ${#copies[@]} -gt 0 ]] || { echo "no other copies found"; exit 0; }
+canonical=${libs[0]}
+copies=("${libs[@]:1}")
+[[ ${#copies[@]} -gt 0 ]] || { echo "only one copy (${canonical}) — nothing to compare"; exit 0; }
 
 drift=0
 for copy in "${copies[@]}"; do
